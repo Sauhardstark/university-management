@@ -10,6 +10,17 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+.settings/
+
+**/.classpath
+
+
+# Keep Maven wrapper (DO NOT ignore these)
+!.mvn/
+!mvnw
+!mvnw.cmd
+!.mvn/wrapper/maven-wrapper.jar
+
 # Package Files #
 *.jar
 *.war
