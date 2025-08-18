@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sauhard.university.management.backend.entities.Course;
@@ -52,5 +53,22 @@ public class CourseController {
 	public ResponseEntity<Void> delete(@PathVariable UUID id) {
 		service.delete(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/search")
+	public List<Course> search(@RequestParam("name") String name) {
+		return service.searchByName(name);
+	}
+	
+	@PutMapping("/{courseId}/teacher/{teacherId}")
+	public ResponseEntity<Course> assign(@PathVariable UUID courseId, @PathVariable UUID teacherId) {
+	    Course updated = service.assignTeacher(courseId, teacherId);
+	    return ResponseEntity.ok(updated); // 200; idempotent if already assigned
+	}
+
+	@DeleteMapping("/{courseId}/teacher")
+	public ResponseEntity<Void> unassign(@PathVariable UUID courseId) {
+	    boolean changed = service.unassignTeacher(courseId);
+	    return changed ? ResponseEntity.noContent().build() : ResponseEntity.noContent().build();
 	}
 }

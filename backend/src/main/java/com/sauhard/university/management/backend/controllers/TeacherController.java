@@ -14,43 +14,50 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sauhard.university.management.backend.entities.Course;
 import com.sauhard.university.management.backend.entities.Teacher;
+import com.sauhard.university.management.backend.services.CourseService;
 import com.sauhard.university.management.backend.services.TeacherService;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/teachers")
 public class TeacherController {
-	private final TeacherService service;
+	private final TeacherService teacherService;
 
-	public TeacherController(TeacherService service) {
-		this.service = service;
-	}
+	private final CourseService courseService;
 
 	@GetMapping
 	public List<Teacher> list() {
-		return service.findAll();
+		return teacherService.findAll();
 	}
 
 	@GetMapping("/{id}")
 	public Teacher get(@PathVariable UUID id) {
-		return service.get(id);
+		return teacherService.get(id);
 	}
 
 	@PostMapping
 	public ResponseEntity<Teacher> create(@RequestBody @Valid Teacher t) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(service.create(t));
+		return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.create(t));
 	}
 
 	@PutMapping("/{id}")
 	public Teacher update(@PathVariable UUID id, @RequestBody @Valid Teacher t) {
-		return service.update(id, t);
+		return teacherService.update(id, t);
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable UUID id) {
-		service.delete(id);
+		teacherService.delete(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/{teacherId}/courses")
+	public List<Course> courses(@PathVariable UUID teacherId) {
+		return courseService.listByTeacher(teacherId);
 	}
 }

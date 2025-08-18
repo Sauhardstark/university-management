@@ -13,18 +13,16 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "students", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
+@Table(name = "students", uniqueConstraints = @UniqueConstraint(name = "students_email", columnNames = "email"))
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Student {
 	@Id
 	@GeneratedValue
@@ -41,6 +39,6 @@ public class Student {
 
 	@Email
 	@NotBlank
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false)
 	private String email;
 }

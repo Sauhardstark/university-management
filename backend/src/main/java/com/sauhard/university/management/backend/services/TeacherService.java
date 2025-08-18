@@ -29,17 +29,12 @@ public class TeacherService {
 		return repo.save(t);
 	}
 
-	public Teacher update(UUID id, Teacher t) {
-		Teacher existing = get(id);
-		existing.setFirstName(t.getFirstName());
-		existing.setLastName(t.getLastName());
-		existing.setEmail(t.getEmail());
-		return repo.save(existing);
+	public Teacher update(UUID id, Teacher teacher) {
+		teacher.setId(id);
+		return repo.save(teacher);
 	}
 
 	public void delete(UUID id) {
-		if (!repo.existsById(id))
-			throw new EntityNotFoundException("Teacher not found: " + id);
 		repo.deleteById(id);
 	}
 }

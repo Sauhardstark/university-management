@@ -29,17 +29,12 @@ public class StudentService {
 		return repo.save(s);
 	}
 
-	public Student update(UUID id, Student s) {
-		Student existing = get(id);
-		existing.setFirstName(s.getFirstName());
-		existing.setLastName(s.getLastName());
-		existing.setEmail(s.getEmail());
-		return repo.save(existing);
+	public Student update(UUID id, Student student) {
+		student.setId(id);
+		return repo.save(student);
 	}
 
 	public void delete(UUID id) {
-		if (!repo.existsById(id))
-			throw new EntityNotFoundException("Student not found: " + id);
 		repo.deleteById(id);
 	}
 }
