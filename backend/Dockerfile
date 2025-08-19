@@ -15,7 +15,7 @@ RUN ./mvnw package
 
 
 # Stage run
-FROM eclipse-temurin:17-jre-alpine AS app
+FROM eclipse-temurin:17-jre AS app
 WORKDIR /app
 
 ENV JAVA_OPTS=""
