@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.sauhard.university.management.backend.dto.StudentResponse;
 import com.sauhard.university.management.backend.entities.Student;
 import com.sauhard.university.management.backend.repository.StudentRepository;
 
@@ -16,22 +17,28 @@ import lombok.AllArgsConstructor;
 public class StudentService {
 	private final StudentRepository repo;
 
-	public List<Student> findAll() {
-		return repo.findAll();
+	private static StudentResponse toDto(Student s) {
+		return StudentResponse.builder().id(s.getId()).firstName(s.getFirstName()).lastName(s.getLastName())
+				.email(s.getEmail()).build();
 	}
 
-	public Student get(UUID id) {
-		return repo.findById(id).orElseThrow(() -> new EntityNotFoundException("Student not found: " + id));
+	public List<StudentResponse> findAll() {
+		return repo.findAll().stream().map(StudentService::toDto).toList();
 	}
 
-	public Student create(Student s) {
+	public StudentResponse get(UUID id) {
+		return repo.findById(id).map(StudentService::toDto)
+				.orElseThrow(() -> new EntityNotFoundException("Student not found: " + id));
+	}
+
+	public StudentResponse create(Student s) {
 		s.setId(null);
-		return repo.save(s);
+		return toDto(repo.save(s));
 	}
 
-	public Student update(UUID id, Student student) {
+	public StudentResponse update(UUID id, Student student) {
 		student.setId(id);
-		return repo.save(student);
+		return toDto(repo.save(student));
 	}
 
 	public void delete(UUID id) {

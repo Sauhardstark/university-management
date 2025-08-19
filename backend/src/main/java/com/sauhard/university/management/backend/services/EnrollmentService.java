@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.sauhard.university.management.backend.dto.EnrollmentResponse;
 import com.sauhard.university.management.backend.entities.Course;
 import com.sauhard.university.management.backend.entities.Enrollment;
 import com.sauhard.university.management.backend.entities.Student;
@@ -23,7 +24,12 @@ public class EnrollmentService {
 	private final StudentRepository studentRepo;
 	private final CourseRepository courseRepo;
 
-	public Enrollment enroll(UUID studentId, UUID courseId) {
+	private static EnrollmentResponse toDto(Enrollment e) {
+		return EnrollmentResponse.builder().id(e.getId()).studentId(e.getStudent().getId())
+				.courseId(e.getCourse().getId()).grade(e.getGrade()).build();
+	}
+
+	public EnrollmentResponse enroll(UUID studentId, UUID courseId) {
 		Student student = studentRepo.findById(studentId)
 				.orElseThrow(() -> new EntityNotFoundException("Student not found: " + studentId));
 		Course course = courseRepo.findById(courseId)
@@ -31,7 +37,7 @@ public class EnrollmentService {
 
 		Enrollment existing = enrollmentRepo.findByStudent_IdAndCourse_Id(studentId, courseId);
 		if (existing != null) {
-			return existing;
+			return toDto(existing); // idempotent
 		}
 
 		boolean overlaps = enrollmentRepo.existsOverlapWithOtherCourses(studentId, courseId, course.getStartDate(),
@@ -39,14 +45,16 @@ public class EnrollmentService {
 		if (overlaps) {
 			throw new IllegalStateException("Enrollment overlaps with another enrolled course for this student.");
 		}
-		return enrollmentRepo.save(Enrollment.builder().student(student).course(course).build());
+
+		Enrollment saved = enrollmentRepo.save(Enrollment.builder().student(student).course(course).build());
+		return toDto(saved);
 	}
 
-	public List<Enrollment> listByStudent(UUID studentId) {
-		return enrollmentRepo.findByStudent_Id(studentId);
+	public List<EnrollmentResponse> listByStudent(UUID studentId) {
+		return enrollmentRepo.findByStudent_Id(studentId).stream().map(EnrollmentService::toDto).toList();
 	}
 
-	public List<Enrollment> listByCourse(UUID courseId) {
-		return enrollmentRepo.findByCourse_Id(courseId);
+	public List<EnrollmentResponse> listByCourse(UUID courseId) {
+		return enrollmentRepo.findByCourse_Id(courseId).stream().map(EnrollmentService::toDto).toList();
 	}
 }

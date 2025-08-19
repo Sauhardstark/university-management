@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.sauhard.university.management.backend.dto.TeacherResponse;
 import com.sauhard.university.management.backend.entities.Teacher;
 import com.sauhard.university.management.backend.repository.TeacherRepository;
 
@@ -16,22 +17,28 @@ import lombok.AllArgsConstructor;
 public class TeacherService {
 	private final TeacherRepository repo;
 
-	public List<Teacher> findAll() {
-		return repo.findAll();
+	private static TeacherResponse toDto(Teacher t) {
+		return TeacherResponse.builder().id(t.getId()).firstName(t.getFirstName()).lastName(t.getLastName())
+				.email(t.getEmail()).build();
 	}
 
-	public Teacher get(UUID id) {
-		return repo.findById(id).orElseThrow(() -> new EntityNotFoundException("Teacher not found: " + id));
+	public List<TeacherResponse> findAll() {
+		return repo.findAll().stream().map(TeacherService::toDto).toList();
 	}
 
-	public Teacher create(Teacher t) {
+	public TeacherResponse get(UUID id) {
+		return repo.findById(id).map(TeacherService::toDto)
+				.orElseThrow(() -> new EntityNotFoundException("Teacher not found: " + id));
+	}
+
+	public TeacherResponse create(Teacher t) {
 		t.setId(null);
-		return repo.save(t);
+		return toDto(repo.save(t));
 	}
 
-	public Teacher update(UUID id, Teacher teacher) {
+	public TeacherResponse update(UUID id, Teacher teacher) {
 		teacher.setId(id);
-		return repo.save(teacher);
+		return toDto(repo.save(teacher));
 	}
 
 	public void delete(UUID id) {

@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,6 +21,7 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,6 +31,7 @@ import lombok.Setter;
 		"start_date" }))
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Course {
@@ -52,6 +56,7 @@ public class Course {
 	@Column(name = "end_date")
 	private LocalDate endDate;
 
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY, optional = true)
 	@JoinColumn(name = "teacher_id")
 	private Teacher teacher;

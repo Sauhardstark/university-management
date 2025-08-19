@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sauhard.university.management.backend.entities.Enrollment;
+import com.sauhard.university.management.backend.dto.EnrollmentResponse;
 import com.sauhard.university.management.backend.services.EnrollmentService;
 
 import lombok.AllArgsConstructor;
@@ -20,23 +20,19 @@ import lombok.AllArgsConstructor;
 @RestController
 @RequestMapping("/api/students/{studentId}/enrollments")
 public class StudentEnrollmentController {
+
 	private final EnrollmentService service;
 
-	public record EnrollmentResponse(UUID id, UUID studentId, UUID courseId) {
-	}
-
-	private static EnrollmentResponse toResp(Enrollment e) {
-		return new EnrollmentResponse(e.getId(), e.getStudent().getId(), e.getCourse().getId());
-	}
-
 	@PutMapping("/{courseId}")
-	public ResponseEntity<?> enroll(@PathVariable UUID studentId, @PathVariable UUID courseId) {
-		Enrollment e = service.enroll(studentId, courseId);
-		return ResponseEntity.status(HttpStatus.CREATED).body(toResp(e));
+	public ResponseEntity<EnrollmentResponse> enroll(@PathVariable UUID studentId, @PathVariable UUID courseId) {
+		EnrollmentResponse resp = service.enroll(studentId, courseId);
+		return ResponseEntity.status(HttpStatus.CREATED).body(resp);
 	}
 
 	@GetMapping
-	public List<EnrollmentResponse> list(@PathVariable UUID studentId) {
-		return service.listByStudent(studentId).stream().map(StudentEnrollmentController::toResp).toList();
+	public ResponseEntity<List<EnrollmentResponse>> list(@PathVariable UUID studentId) {
+		List<EnrollmentResponse> enrollments = service.listByStudent(studentId);
+		return enrollments.isEmpty() ? ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+				: ResponseEntity.ok(enrollments);
 	}
 }

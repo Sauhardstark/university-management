@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sauhard.university.management.backend.dto.StudentResponse;
 import com.sauhard.university.management.backend.entities.Student;
 import com.sauhard.university.management.backend.services.StudentService;
 
@@ -27,23 +28,24 @@ public class StudentController {
 	private final StudentService service;
 
 	@GetMapping
-	public List<Student> list() {
-		return service.findAll();
+	public ResponseEntity<List<StudentResponse>> list() {
+		List<StudentResponse> students = service.findAll();
+		return students.isEmpty() ? ResponseEntity.status(HttpStatus.NOT_FOUND).build() : ResponseEntity.ok(students);
 	}
 
 	@GetMapping("/{id}")
-	public Student get(@PathVariable UUID id) {
-		return service.get(id);
+	public ResponseEntity<StudentResponse> get(@PathVariable UUID id) {
+		return ResponseEntity.ok(service.get(id));
 	}
 
 	@PostMapping
-	public ResponseEntity<Student> create(@RequestBody @Valid Student s) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(service.create(s));
+	public ResponseEntity<StudentResponse> create(@RequestBody @Valid Student student) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(service.create(student));
 	}
 
 	@PutMapping("/{id}")
-	public Student update(@PathVariable UUID id, @RequestBody @Valid Student s) {
-		return service.update(id, s);
+	public ResponseEntity<StudentResponse> update(@PathVariable UUID id, @RequestBody @Valid Student student) {
+		return ResponseEntity.ok(service.update(id, student));
 	}
 
 	@DeleteMapping("/{id}")

@@ -64,5 +64,7 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, UUID> {
 			""")
 	List<CourseAggregate> aggregateByCourseIds(@Param("courseIds") Collection<UUID> courseIds,
 			@Param("fail") int failThreshold);
+	
+	boolean existsByStudent_IdAndCourse_Id(UUID studentId, UUID courseId);
 
 }
