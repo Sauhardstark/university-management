@@ -100,3 +100,6 @@ A fullstack application for managing students, teachers and courses
 * Database is ephemeral so no storage across sessions
 
 ## Schema Design
+
+![university_management](https://github.com/user-attachments/assets/f27c560e-3586-484e-9f72-4baf1ba0e108)
+
